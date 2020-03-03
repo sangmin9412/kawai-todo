@@ -12,6 +12,16 @@ export default function ToDo() {
             return !isComplated
         })
     }
+    const _startEditing = () => {
+        setIsEditing((isEditing) => {
+            return isEditing = true
+        })
+    }
+    const _finishEditing = () => {
+        setIsEditing((isEditing) => {
+            return isEditing = false
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -28,16 +38,29 @@ export default function ToDo() {
                     ]}>
                     Hello I`m a To Do
                 </Text>
-                {isEditing ? (
-                    <View>
-
-                    </View>
-                ) : (
-                    <View>
-                        
-                    </View>
-                )}
             </View>
+            {isEditing ? (
+            <View style={styles.actions}>
+                <TouchableOpacity onPressOut={_finishEditing}>
+                    <View style={styles.actionContainer}>
+                        <Text style={styles.actionText}>Suc</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            ) : (
+            <View style={styles.actions}>
+                <TouchableOpacity onPressOut={_startEditing}>
+                    <View style={styles.actionContainer}>
+                        <Text style={styles.actionText}>Edit</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <View style={styles.actionContainer}>
+                        <Text style={styles.actionText}>Exit</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            )}
         </View>
     );
 }
@@ -48,12 +71,14 @@ const styles = StyleSheet.create({
         borderBottomColor: "#bbb",
         borderBottomWidth: 0.5,
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     column: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        width: width / 2
     },
     circle: {
         width: 30,
@@ -80,5 +105,12 @@ const styles = StyleSheet.create({
     },
     uncomplatedText:{
         color: "#353839"
+    },
+    actions: {
+        flexDirection: "row"
+    },
+    actionContainer: {
+        marginVertical: 10,
+        marginHorizontal: 10
     }
 });
