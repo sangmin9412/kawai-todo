@@ -9,18 +9,40 @@ import {
   Dimensions,
   Platform 
 } from 'react-native';
+import { AppLoading } from 'expo';
 import ToDo from './ToDo';
 
 const {width} = Dimensions.get("window")
 
 export default function App() {
   useEffect(() => {
-
+    _loadToDos()
   }, [])
   const [newToDo, setNewToDo] = useState("")
+  const [loadedToDos, setLoadedToDos] = useState(false)
 
   const _controllNewToDo = (text) => {
     setNewToDo(text)
+  }
+
+  const _loadToDos = () => {
+    setLoadedToDos((loadedToDos) => {
+      return loadedToDos = true
+    })
+  }
+
+  const _addToDo = () => {
+    setNewToDo((newToDo) => {
+      if (newToDo !== "") {
+        newToDo = ""
+      }
+    })
+  }
+
+  if (!loadedToDos) {
+    return (
+      <AppLoading></AppLoading>
+    )
   }
 
   return (
@@ -28,9 +50,18 @@ export default function App() {
       <StatusBar barStyle="light-content" />
       <Text style={styles.title}>Kawai To Do</Text>
       <View style={styles.card}>
-        <TextInput style={styles.input} placeholder={"New To Do"} value={newToDo} onChangeText={_controllNewToDo} placeholderTextColor={"#999"} returnKeyType={"done"} autoCorrect={false} />
+        <TextInput 
+          style={styles.input} 
+          placeholder={"New To Do"} 
+          value={newToDo} 
+          onChangeText={_controllNewToDo} 
+          placeholderTextColor={"#999"} 
+          returnKeyType={"done"} 
+          autoCorrect={false}
+          onSubmitEditing={_addToDo} 
+        />
         <ScrollView contentContainerStyle={styles.toDos}>
-          <ToDo />
+          <ToDo text={"Hello I`m a To Do"} />
         </ScrollView>
       </View>
     </View>

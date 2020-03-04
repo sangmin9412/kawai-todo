@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get("window")
 
-export default function ToDo() {
-    const [isEditing, setIsEditing] = useState(false);
-    const [isComplated, setIsComplated] = useState(false);
+export default function ToDo(props) {
+    useEffect(() => {
+        setTodoValue(props.text)
+    }, [props.text])
+
+    const [isEditing, setIsEditing] = useState(false)
+    const [isComplated, setIsComplated] = useState(false)
+    const [todoValue, setTodoValue] = useState("")
+    const text = props.text
 
     const _toggleComplate = () => {
         setIsComplated((isComplated) => {
@@ -13,6 +19,7 @@ export default function ToDo() {
         })
     }
     const _startEditing = () => {
+        setTodoValue(props.text)
         setIsEditing((isEditing) => {
             return isEditing = true
         })
@@ -20,6 +27,12 @@ export default function ToDo() {
     const _finishEditing = () => {
         setIsEditing((isEditing) => {
             return isEditing = false
+        })
+    }
+
+    const _controllInput = (text) => {
+        setTodoValue((todoValue) => {
+            return todoValue = text
         })
     }
 
@@ -32,12 +45,26 @@ export default function ToDo() {
                         isComplated ? styles.complatedCircle : styles.uncomplatedCircle
                     ]} />
                 </TouchableOpacity>
+                {isEditing ? (
+                <TextInput style={[
+                    styles.input,
+                    styles.text,
+                    isComplated ? styles.complatedText : styles.uncomplatedText
+                ]}
+                value={todoValue}
+                multiline={true}
+                returnKeyType={"done"}
+                onChangeText={_controllInput}
+                onBlur={_finishEditing}
+                />
+                ) : (
                 <Text style={[
                     styles.text,
                     isComplated ? styles.complatedText : styles.uncomplatedText
                     ]}>
-                    Hello I`m a To Do
+                    {props.text}
                 </Text>
+                )}
             </View>
             {isEditing ? (
             <View style={styles.actions}>
@@ -56,7 +83,7 @@ export default function ToDo() {
                 </TouchableOpacity>
                 <TouchableOpacity>
                     <View style={styles.actionContainer}>
-                        <Text style={styles.actionText}>Exit</Text>
+                        <Text style={styles.actionText}>del</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -68,8 +95,8 @@ export default function ToDo() {
 const styles = StyleSheet.create({
     container: {
         width: width - 50,
-        borderBottomColor: "#bbb",
-        borderBottomWidth: 0.5,
+        borderBottomColor: "#ddd",
+        borderBottomWidth: 1,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between"
@@ -96,7 +123,6 @@ const styles = StyleSheet.create({
     text: {
         fontWeight: "bold",
         fontSize: 20,
-        color: "#111",
         marginVertical: 20
     },
     complatedText:{
@@ -112,5 +138,9 @@ const styles = StyleSheet.create({
     actionContainer: {
         marginVertical: 10,
         marginHorizontal: 10
+    },
+    input: {
+        marginVertical: 15,
+        width: width / 2
     }
 });
