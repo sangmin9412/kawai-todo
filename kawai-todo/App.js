@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { AppLoading } from 'expo';
 import ToDo from './ToDo';
+import uuidv1 from "uuid/v1";
 
 const {width} = Dimensions.get("window")
 
@@ -20,6 +21,7 @@ export default function App() {
   }, [])
   const [newToDo, setNewToDo] = useState("")
   const [loadedToDos, setLoadedToDos] = useState(false)
+  const [newState, setNewState] = useState({})
 
   const _controllNewToDo = (text) => {
     setNewToDo(text)
@@ -32,11 +34,49 @@ export default function App() {
   }
 
   const _addToDo = () => {
-    setNewToDo((newToDo) => {
-      if (newToDo !== "") {
-        newToDo = ""
+    if (newToDo !== "") {
+      const ID = uuidv1();
+      const newToDoObject = {
+        [ID]: {
+          id: ID,
+          isComplated: false,
+          text: newToDo,
+          createdAt: Date.now()
+        }
       }
-    })
+      setNewToDo(newToDo => newToDo = "");
+
+      console.log ( { ...newState } )
+      return (
+        setNewState({
+          ...newState, 
+          toDos:{
+            ...newState.toDos,
+            ...newToDoObject
+        }})
+      )
+      
+      // setToDos(() => {
+      //   const ID = uuidv1();
+      //   const newToDoObject = {
+      //     [ID]: {
+      //       id: ID,
+      //       isComplated: false,
+      //       text: newToDo,
+      //       createdAt: Date.now()
+      //     }
+      //   }
+      //   const newState = {
+      //     newToDo: "",
+      //     toDos: {
+      //       ...toDos,
+      //       ...newToDoObject
+      //     }
+      //   }
+      //   //return { ...newState }
+      //   return ( console.log( {...newState} ) )
+      // })
+    }
   }
 
   if (!loadedToDos) {
@@ -61,7 +101,7 @@ export default function App() {
           onSubmitEditing={_addToDo} 
         />
         <ScrollView contentContainerStyle={styles.toDos}>
-          <ToDo text={"Hello I`m a To Do"} />
+          {(newState.toDos) ? Object.values(newState.toDos).map(toDo => <ToDo key={toDo.id} {...toDo} /> ) : <Text style={styles.none}>To Do List Not Defined</Text>}
         </ScrollView>
       </View>
     </View>
@@ -110,5 +150,9 @@ const styles = StyleSheet.create({
   },
   toDos: {
     alignItems: "center"
+  },
+  none: {
+    padding: 20,
+    fontSize: 20
   }
 });

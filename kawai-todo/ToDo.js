@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get("window")
 export default function ToDo(props) {
     useEffect(() => {
         setTodoValue(props.text)
-    }, [props.text])
+    }, [])
 
     const [isEditing, setIsEditing] = useState(false)
     const [isComplated, setIsComplated] = useState(false)
@@ -47,9 +47,9 @@ export default function ToDo(props) {
                 </TouchableOpacity>
                 {isEditing ? (
                 <TextInput style={[
-                    styles.input,
                     styles.text,
-                    isComplated ? styles.complatedText : styles.uncomplatedText
+                    isComplated ? styles.complatedText : styles.uncomplatedText,
+                    styles.input
                 ]}
                 value={todoValue}
                 multiline={true}
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
     column: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
         width: width / 2
     },
     circle: {
@@ -141,6 +140,7 @@ const styles = StyleSheet.create({
     },
     input: {
         marginVertical: 15,
-        width: width / 2
+        width: width / 2,
+        paddingVertical: 5
     }
 });
