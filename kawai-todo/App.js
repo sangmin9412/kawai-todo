@@ -55,28 +55,21 @@ export default function App() {
             ...newToDoObject
         }})
       )
-      
-      // setToDos(() => {
-      //   const ID = uuidv1();
-      //   const newToDoObject = {
-      //     [ID]: {
-      //       id: ID,
-      //       isComplated: false,
-      //       text: newToDo,
-      //       createdAt: Date.now()
-      //     }
-      //   }
-      //   const newState = {
-      //     newToDo: "",
-      //     toDos: {
-      //       ...toDos,
-      //       ...newToDoObject
-      //     }
-      //   }
-      //   //return { ...newState }
-      //   return ( console.log( {...newState} ) )
-      // })
     }
+  }
+
+  const _deleteToDo = (id) => {
+    return (
+      setNewState(({...newState}) => {
+        const toDos = { ...newState.toDos }
+        console.log(id)
+        console.log(toDos)
+        console.log(toDos[id])
+        delete toDos[id]
+        
+        return { ...newState }
+      })
+    )
   }
 
   if (!loadedToDos) {
@@ -101,7 +94,7 @@ export default function App() {
           onSubmitEditing={_addToDo} 
         />
         <ScrollView contentContainerStyle={styles.toDos}>
-          {(newState.toDos) ? Object.values(newState.toDos).map(toDo => <ToDo key={toDo.id} {...toDo} /> ) : <Text style={styles.none}>To Do List Not Defined</Text>}
+          {(newState.toDos) ? Object.values(newState.toDos).map(toDo => <ToDo key={toDo.id} delete={_deleteToDo} {...toDo}/> ) : <Text style={styles.none}>To Do List Not Defined</Text>}
         </ScrollView>
       </View>
     </View>

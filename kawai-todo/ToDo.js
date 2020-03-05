@@ -12,6 +12,7 @@ export default function ToDo(props) {
     const [isComplated, setIsComplated] = useState(false)
     const [todoValue, setTodoValue] = useState("")
     const text = props.text
+    const deleteToDo = props.delete
 
     const _toggleComplate = () => {
         setIsComplated((isComplated) => {
@@ -19,7 +20,6 @@ export default function ToDo(props) {
         })
     }
     const _startEditing = () => {
-        setTodoValue(props.text)
         setIsEditing((isEditing) => {
             return isEditing = true
         })
@@ -81,7 +81,7 @@ export default function ToDo(props) {
                         <Text style={styles.actionText}>Edit</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={deleteToDo}>
                     <View style={styles.actionContainer}>
                         <Text style={styles.actionText}>del</Text>
                     </View>
