@@ -9,15 +9,26 @@ export default function ToDo(props) {
     }, [])
 
     const [isEditing, setIsEditing] = useState(false)
-    const [isComplated, setIsComplated] = useState(false)
+    // const [isComplated, setIsComplated] = useState(false)
     const [todoValue, setTodoValue] = useState("")
+    const id = props.id
     const text = props.text
     const deleteToDo = props.delete
+    const isComplated = props.isComplated
+    const uncompleteToDo = props.uncompleteToDo
+    const completeToDo = props.completeToDo
+    const updateToDo = props.updateToDo
 
     const _toggleComplate = () => {
-        setIsComplated((isComplated) => {
-            return !isComplated
-        })
+        // setIsComplated((isComplated) => {
+        //     return !isComplated
+        // })
+        
+        if (isComplated) {
+            uncompleteToDo(id)
+        } else {
+            completeToDo(id)
+        }
     }
     const _startEditing = () => {
         setIsEditing((isEditing) => {
@@ -25,6 +36,7 @@ export default function ToDo(props) {
         })
     }
     const _finishEditing = () => {
+        updateToDo(id, todoValue)
         setIsEditing((isEditing) => {
             return isEditing = false
         })
@@ -56,13 +68,14 @@ export default function ToDo(props) {
                 returnKeyType={"done"}
                 onChangeText={_controllInput}
                 onBlur={_finishEditing}
+                autoFocus={true}
                 />
                 ) : (
                 <Text style={[
                     styles.text,
                     isComplated ? styles.complatedText : styles.uncomplatedText
                     ]}>
-                    {props.text}
+                    {text}
                 </Text>
                 )}
             </View>
@@ -81,7 +94,7 @@ export default function ToDo(props) {
                         <Text style={styles.actionText}>Edit</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPressOut={deleteToDo}>
+                <TouchableOpacity onPressOut={() => deleteToDo(id)}>
                     <View style={styles.actionContainer}>
                         <Text style={styles.actionText}>del</Text>
                     </View>

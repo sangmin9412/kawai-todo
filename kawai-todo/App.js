@@ -7,7 +7,8 @@ import {
   TextInput,
   ScrollView,
   Dimensions,
-  Platform 
+  Platform, 
+  AsyncStorage
 } from 'react-native';
 import { AppLoading } from 'expo';
 import ToDo from './ToDo';
@@ -27,10 +28,25 @@ export default function App() {
     setNewToDo(text)
   }
 
-  const _loadToDos = () => {
-    setLoadedToDos((loadedToDos) => {
-      return loadedToDos = true
-    })
+  const _loadToDos = async () => {
+    try{
+      const toDos = await AsyncStorage.getItem("toDos")
+      const parsedToDos = JSON.parse(toDos)
+      console.log(parsedToDos)
+      setLoadedToDos((loadedToDos) => {
+        return loadedToDos = true
+      })
+      setNewState( ( { ...newState } ) => {
+        newState = {
+          toDos: {
+            ...parsedToDos
+          }
+        }
+        return { ...newState }
+      })
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   const _addToDo = () => {
@@ -45,32 +61,106 @@ export default function App() {
         }
       }
       setNewToDo(newToDo => newToDo = "");
-
-      console.log ( { ...newState } )
       return (
-        setNewState({
-          ...newState, 
-          toDos:{
-            ...newState.toDos,
-            ...newToDoObject
-        }})
+        // setNewState({
+        //   ...newState, 
+        //   toDos:{
+        //     ...newState.toDos,
+        //     ...newToDoObject
+        // }})
+        setNewState( ( { ...newState } ) => {
+          newState = {
+            ...newState,
+            toDos: {
+              ...newState.toDos,
+              ...newToDoObject
+            }
+          }
+          _saveToDos(newState.toDos)
+          return { ...newState }
+        })
       )
     }
   }
 
   const _deleteToDo = (id) => {
     return (
-      setNewState(({...newState}) => {
-        const toDos = { ...newState.toDos }
-        console.log(id)
-        console.log(toDos)
-        console.log(toDos[id])
-        delete toDos[id]
-        
+      setNewState( ( { ...newState } ) => {
+        delete newState.toDos[id]
+        newState = {
+          ...newState,
+          toDos: {
+            ...newState.toDos
+          }
+        }
+        _saveToDos(newState.toDos)
         return { ...newState }
       })
     )
   }
+
+  const _uncompleteToDo = (id) => {
+    return (
+      setNewState( ( { ...newState } ) => {
+        newState = {
+          ...newState,
+          toDos: {
+            ...newState.toDos,
+            [id]: {
+              ...newState.toDos[id],
+              isComplated: false
+            }
+          }
+        }
+        _saveToDos(newState.toDos)
+        return { ...newState }
+      })
+    )
+  }
+  
+  const _completeToDo = (id) => {
+    return (
+      setNewState( ( { ...newState } ) => {
+        newState = {
+          ...newState,
+          toDos: {
+            ...newState.toDos,
+            [id]: {
+              ...newState.toDos[id],
+              isComplated: true
+            }
+          }
+        }
+        _saveToDos(newState.toDos)
+        return { ...newState }
+      })
+    )
+  }
+
+  const _updateToDo = (id, text) => {
+    return (
+      setNewState( ( { ...newState } ) => {
+        newState = {
+          ...newState,
+          toDos: {
+            ...newState.toDos,
+            [id]: {
+              ...newState.toDos[id],
+              text: text
+            }
+          }
+        }
+        _saveToDos(newState.toDos)
+        return { ...newState }
+      })
+    )
+  }
+
+  const _saveToDos = (newToDos) => {
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos))
+  }
+
+  // console.log(Object.values(newState));
 
   if (!loadedToDos) {
     return (
@@ -94,7 +184,18 @@ export default function App() {
           onSubmitEditing={_addToDo} 
         />
         <ScrollView contentContainerStyle={styles.toDos}>
-          {(newState.toDos) ? Object.values(newState.toDos).map(toDo => <ToDo key={toDo.id} delete={_deleteToDo} {...toDo}/> ) : <Text style={styles.none}>To Do List Not Defined</Text>}
+          {(newState.toDos) ? Object.values(newState.toDos)
+          .reverse()
+          .map(
+            toDo => 
+            <ToDo 
+            key={toDo.id} 
+            delete={_deleteToDo} 
+            uncompleteToDo={_uncompleteToDo} 
+            completeToDo={_completeToDo} 
+            updateToDo={_updateToDo}
+            {...toDo}/> 
+          ) : <Text style={styles.none}>To Do List Not Defined</Text>}
         </ScrollView>
       </View>
     </View>
